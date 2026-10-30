@@ -63,7 +63,7 @@ def fetch_historical_data(city_name: str, start_date: str, end_date: str) -> dic
     except ValueError:
         raise ExtractError("A resposta da API não é um JSON válido.")
 
-    # Validar a chave
+    # Valida se a chave "daily" tá na lista
     if "daily" not in data:
         raise ExtractError(
             "Resposta da API não contém a chave 'daily'. "
