@@ -1,22 +1,83 @@
-# ObservaClima — Documento de Escopo do Projeto
+# Observa Clima
 
-## 1. Visão Geral
-O ObservaClima é uma plataforma web desenvolvida para coleta, armazenamento, processamento e visualização de dados meteorológicos. O sistema atua como uma ponte entre dados brutos de APIs públicas e o usuário final, transformando informações técnicas em gráficos e indicadores de fácil compreensão, auxiliando na análise de tendências climáticas e no acompanhamento do histórico e da previsão do tempo de uma região específica.
+Plataforma web para coleta, armazenamento, processamento e visualização de dados meteorológicos da cidade de Recife/PE.
 
-## 2. Objetivos
-### 2.1. Objetivo Geral
-Desenvolver um sistema web funcional para monitoramento climático local, integrando fontes de dados externas a um banco de dados próprio e apresentando as informações de forma visual e acessível.
+## Objetivo
+
+O Observa Clima atua como uma ponte entre dados brutos de APIs públicas (Open-Meteo) e o usuário final, transformando informações técnicas em gráficos e indicadores de fácil compreensão, auxiliando na análise de tendências climáticas e no acompanhamento do histórico e da previsão do tempo.
+
+## Tecnologias 
+
+- **Backend:** Python 3.13, Django 6.1, Django REST Framework 3.18
+- **Banco de Dados:** PostgreSQL
+- **Pipeline ETL:** Requests, Pandas, NumPy
+- **Frontend:** HTML, CSS, JavaScript, Chart.js (a ser implementado)
+
+## Instalação
+
+### Pré-requisitos
+
+- Python 3.13+
+- PostgreSQL (a ser configurado na Etapa 5)
+
+### Passos
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/Projeto-de-Estagio.git
+cd Projeto-de-Estagio
+```
+
+2. Crie e ative o ambiente virtual:
+````bash
+python -m venv .venv
+source .venv/Scripts/activate  # Windows
+# ou
+source .venv/bin/activate      # Linux/Mac
+````
+
+3. Instale as dependências no terminal:
+````bash
+pip install -r requirements.txt
+````
+
+4. Configure o Pipeline ETL (em desenvolvimento)
+````bash
+python -m scripts.test_extract
+````
+
+5. Rode o servidor Django (a ser implementado)
+````bash
+python manage.py runserver
+````
 
 
-## 3. Requisitos Funcionais (RF)
-- **RF01:** O sistema deve permitir o cadastro, login e logout de usuários.
-- **RF02:** O sistema deve consumir a API Open-Meteo para obter dados históricos (90 dias) e de previsão (7 dias) de Recife.
-- **RF03:** O sistema deve validar e armazenar os dados recebidos em um banco de dados PostgreSQL.
-- **RF04:** O sistema deve calcular indicadores básicos, como média de temperatura e volume total de precipitação do período consultado.
-- **RF05:** O sistema deve disponibilizar os dados através de uma API REST própria (Django REST Framework).
-- **RF06:** O sistema deve exibir um dashboard web com gráficos interativos das variáveis climáticas ao longo do tempo.
+## Funcionalidades
 
-## 4. Requisitos Não Funcionais (RNF)
-- **RNF01 (Desempenho):** O dashboard deve carregar e renderizar os gráficos em menos de 3 segundos em uma conexão de banda larga padrão.
-- **RNF02 (Usabilidade):** A interface do dashboard deve ser responsiva, adaptando-se razoavelmente a telas de dispositivos móveis, embora o foco de desenvolvimento seja a experiência em desktop.
-- **RNF03 (Tecnologia):** O backend deve ser desenvolvido em Python (Django + Django REST Framework), o banco de dados em PostgreSQL e o frontend com HTML, CSS, JavaScript e uma biblioteca de gráficos (ex: Chart.js).
+- Extração de dados históricos da API Open-Meteo
+- Transformação e validação dos dados
+- Armazenamento em PostgreSQL
+- API REST para consulta de dados
+- Dashboard com gráficos interativos
+- Sistema de autenticação de usuários
+
+## Etapas concluídas:
+* Definição do escopo
+* Configuração do ambiente
+* Módulo de extração de dados (pipeline/extract.py)
+
+## Próximas etapas:
+* Pipeline ETL completo (transform + load)
+* Configuração do PostgreSQL
+* Desenvolvimento do backend Django
+* Implementação do dashboard
+
+## Documentação
+- [Documento de Escopo]("docs\escopo.md")
+- [Pipeline ETL](pipeline\README.md)
+
+## Autor
+Desenvolvido como projeto de estágio acadêmico, por Esdras Matheus, Guilherme Lira, João Victor Souza e Kephanny Medeiros.
+
+## Licença
+Este projeto está sob a licença [MIT license]("LICENSE"). 
