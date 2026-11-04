@@ -65,10 +65,10 @@ python manage.py runserver
 * Definição do escopo
 * Configuração do ambiente
 * Módulo de extração de dados (pipeline/extract.py)
-
-## Próximas etapas:
 * Pipeline ETL completo (transform + load)
 * Configuração do PostgreSQL
+
+## Próximas etapas:
 * Desenvolvimento do backend Django
 * Implementação do dashboard
 
