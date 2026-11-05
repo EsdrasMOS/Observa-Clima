@@ -6,6 +6,10 @@ from datetime import timedelta
 from django.utils import timezone
 from .models import WeatherRecord
 from .serializers import WeatherRecordSerializer
+from django.db.models import Avg, Max, Min, Sum, Count
+from django.db.models.functions import TruncMonth
+from datetime import timedelta
+from django.utils import timezone
 
 # Endpoints para listar registros, buscar por ID e mostrar informação dos últimos 7 dias 
 class WeatherRecordViewSet(viewsets.ReadOnlyModelViewSet):
@@ -58,7 +62,77 @@ class WeatherRecordViewSet(viewsets.ReadOnlyModelViewSet):
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
+    # O dia mais quente, mais frio ou mais chuvoso
+    @action(detail=False, methods=['get'])   
+    def extremes(self, request):
+        queryset = self.get_queryset()
+        # Mis quente
+        hottest = queryset.order_by('-temp_max').first()
+        # Mais frio
+        coldest = queryset.order_by('temp_min').first()
+        # Mais chuvoso
+        rainiest = queryset.order_by('-precipitation').first()
+        serializer = self.get_serializer([hottest, coldest, rainiest], many=True)
+        # Organizando a semântica da resposta
+        data = {
+            "hottest_day": serializer.data[0] if hottest else None,
+            "coldest_day": serializer.data[1] if coldest else None,
+            "rainiest_day": serializer.data[2] if rainiest else None
+        }
+        return Response(data)
+    # Endpoint com total de chuva de cada mês que há no banco
+    @action(detail=False, methods=['get'])
+    def monthly(self, request):
+        queryset = self.get_queryset().annotate(
+            month=TruncMonth('date')
+        ).values('month').annotate(
+            total_precipitation=Sum('precipitation'),
+            avg_temp=Avg('temp_avg'),
+            record_count=Count('id')
+        ).order_by('month')
+        
+        # Formatar as datas para o JSON
+        formatted_data = []
+        for item in queryset:
+            formatted_data.append({
+                "month": item['month'].strftime('%Y-%m'),
+                "total_precipitation_mm": round(item['total_precipitation'] or 0, 1),
+                "avg_temp_celsius": round(item['avg_temp'] or 0, 1),
+                "days_recorded": item['record_count']
+            })
+        return Response(formatted_data)
+    # Endpoint com os dados diários dos últimos 30 dias + média móvel de 7 dias
+    @action(detail=False, methods=['get'])
+    def trends(self, request):
+        latest_date = timezone.now().date()
+        start_date = latest_date - timedelta(days=30)
+        
+        # Busca os dados ordenados por data para calcular a média móvel
+        queryset = self.get_queryset().filter(
+            date__gte=start_date,
+            date__lte=latest_date
+        ).order_by('date')
+        
+        data = []
+        temps = []
+        
+        for record in queryset:
+            temps.append(record.temp_avg)
+            # Calcula a média móvel de 7 dias
+            if len(temps) >= 7:
+                moving_avg = sum(temps[-7:]) / 7
+            else:
+                # Média dos dias disponíveis no início
+                moving_avg = sum(temps) / len(temps) 
+                
+            data.append({
+                "date": record.date.strftime('%Y-%m-%d'),
+                "temp_avg": round(record.temp_avg, 1),
+                "moving_avg_7d": round(moving_avg, 1),
+                "precipitation": round(record.precipitation, 1)
+            })
+            
+        return Response(data)
 
 # Import para o action stats
 from django.db.models import Count
